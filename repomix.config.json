@@ -11,7 +11,15 @@
   "ignore": {
     "useGitignore": true,
     "useDefaultPatterns": true,
-    "customPatterns": []
+    "customPatterns": [
+      "repomix.config.json",
+      "repomix-output.*",
+      "node_modules",
+      "dist",
+      ".env",
+      "package-lock.json",
+      "tsconfig.tsbuildinfo"
+    ]
   },
   "security": {
     "enableSecurityCheck": true

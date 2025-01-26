@@ -1,13 +1,17 @@
-export interface SubdomainResult {
-  domain: string;
-  ip?: string;
-  source: 'crt.sh' | 'brute-force' | 'dns' | 'rapid7';
-  timestamp: Date;
-  resolves: boolean;
-  ports?: number[];
-  latency?: number;
+/**
+ * Represents the results of a subdomain after scanning.
+ */
+export interface SubdomainVerificationResult {
+  subdomain: string;
+  isAlive: boolean;
+  resolvedIps: string[];
+  source: 'crtsh' | 'rapid7' | 'bruteforce';
+  error?: string;
 }
 
+/**
+ * Represents the final network test result for a target.
+ */
 export interface NetworkTestResult {
   target: string;
   timestamp: Date;
@@ -18,6 +22,9 @@ export interface NetworkTestResult {
   dnsRecords?: DNSRecord[];
 }
 
+/**
+ * Represents a single MTR hop entry in a network trace.
+ */
 export interface MTRHop {
   hop: number;
   host: string;
@@ -30,12 +37,18 @@ export interface MTRHop {
   stDev: number;
 }
 
+/**
+ * Represents a port scan result for a single port.
+ */
 export interface PortScanResult {
   port: number;
   state: 'open' | 'closed' | 'filtered';
   service?: string;
 }
 
+/**
+ * Represents a DNS record fetched during network analysis.
+ */
 export interface DNSRecord {
   type: string;
   value: string;

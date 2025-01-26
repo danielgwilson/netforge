@@ -1,79 +1,90 @@
 import Table from 'cli-table3';
 import chalk from 'chalk';
-import type {
-  SubdomainResult,
+import {
+  SubdomainVerificationResult,
   NetworkTestResult,
   MTRHop,
   PortScanResult,
   DNSRecord,
 } from '../types';
 
-export function displayResults(
-  subdomains: SubdomainResult[],
-  networkResults: NetworkTestResult[]
+/**
+ * Displays a list of subdomain verification results in a CLI table.
+ */
+export function displaySubdomainResults(
+  subdomains: SubdomainVerificationResult[],
 ): void {
-  // Display subdomain results
   console.log(chalk.cyan('\nDiscovered Subdomains:'));
 
   const subdomainTable = new Table({
-    head: ['Domain', 'IP', 'Source', 'Latency'].map((h) => chalk.bold(h)),
-    style: {
-      head: [],
-      border: [],
-    },
+    head: ['Subdomain', 'IPs', 'Source', 'Alive?'].map((h) =>
+      chalk.bold(h),
+    ),
+    style: { head: [], border: [] },
   });
 
   subdomains.forEach((s) => {
     subdomainTable.push([
-      s.domain,
-      s.ip ?? 'N/A',
+      s.subdomain,
+      s.resolvedIps.join(', ') || 'N/A',
       s.source,
-      s.latency ? `${s.latency.toFixed(2)}ms` : 'N/A',
+      s.isAlive ? chalk.green('YES') : chalk.red('NO'),
     ]);
   });
 
   console.log(subdomainTable.toString());
+}
 
-  // Display network test results if available
-  if (networkResults.length > 0) {
-    console.log(chalk.cyan('\nNetwork Analysis:'));
-    for (const result of networkResults) {
-      console.log(chalk.bold(`\nTarget: ${result.target}`));
+/**
+ * Displays network test results (MTR, DNS, etc.) in the console.
+ */
+export function displayNetworkResults(
+  results: NetworkTestResult[],
+): void {
+  if (results.length === 0) return;
 
-      if (result.avgLatency) {
-        console.log(`Average Latency: ${result.avgLatency.toFixed(2)}ms`);
-      }
+  console.log(chalk.cyan('\nNetwork Analysis:'));
 
-      if (result.packetLoss !== undefined) {
-        console.log(`Packet Loss: ${result.packetLoss}%`);
-      }
-
-      if (result.mtr?.length) {
-        displayMTRResults(result.mtr);
-      }
-
-      if (result.ports?.length) {
-        displayPortResults(result.ports);
-      }
-
-      if (result.dnsRecords?.length) {
-        displayDNSResults(result.dnsRecords);
-      }
+  for (const result of results) {
+    console.log(chalk.bold(`\nTarget: ${result.target}`));
+    if (result.avgLatency) {
+      console.log(
+        `  Average Latency: ${result.avgLatency.toFixed(2)} ms`,
+      );
+    }
+    if (result.packetLoss !== undefined) {
+      console.log(`  Packet Loss: ${result.packetLoss}%`);
+    }
+    if (result.mtr?.length) {
+      displayMTRResults(result.mtr);
+    }
+    if (result.ports?.length) {
+      displayPortResults(result.ports);
+    }
+    if (result.dnsRecords?.length) {
+      displayDNSResults(result.dnsRecords);
     }
   }
 }
 
+/**
+ * Displays MTR hops in a CLI table.
+ */
 function displayMTRResults(hops: MTRHop[]): void {
   console.log(chalk.cyan('\nMTR Analysis:'));
 
   const mtrTable = new Table({
-    head: ['Hop', 'Host', 'Loss %', 'Sent', 'Last', 'Avg', 'Best', 'Worst'].map(
-      (h) => chalk.bold(h)
-    ),
-    style: {
-      head: [],
-      border: [],
-    },
+    head: [
+      'Hop',
+      'Host',
+      'Loss %',
+      'Sent',
+      'Last',
+      'Avg',
+      'Best',
+      'Worst',
+    ].map((h) => chalk.bold(h)),
+    style: { head: [], border: [] },
   });
 
   hops.forEach((hop) => {
@@ -92,37 +103,33 @@ function displayMTRResults(hops: MTRHop[]): void {
   console.log(mtrTable.toString());
 }
 
+/**
+ * Displays port scan results in a CLI table.
+ */
 function displayPortResults(ports: PortScanResult[]): void {
   console.log(chalk.cyan('\nPort Scan Results:'));
 
   const portTable = new Table({
     head: ['Port', 'State', 'Service'].map((h) => chalk.bold(h)),
-    style: {
-      head: [],
-      border: [],
-    },
+    style: { head: [], border: [] },
   });
 
   ports.forEach((port) => {
-    portTable.push([
-      port.port.toString(),
-      port.state,
-      port.service ?? 'Unknown',
-    ]);
+    portTable.push([port.port, port.state, port.service ?? 'Unknown']);
   });
 
   console.log(portTable.toString());
 }
 
+/**
+ * Displays DNS record results in a CLI table.
+ */
 function displayDNSResults(records: DNSRecord[]): void {
   console.log(chalk.cyan('\nDNS Records:'));
 
   const dnsTable = new Table({
     head: ['Type', 'Value', 'TTL'].map((h) => chalk.bold(h)),
-    style: {
-      head: [],
-      border: [],
-    },
+    style: { head: [], border: [] },
   });
 
   records.forEach((record) => {
@@ -130,20 +137,4 @@ function displayDNSResults(records: DNSRecord[]): void {
   });
 
   console.log(dnsTable.toString());
-}
-
-export function displayTraceResults(result: NetworkTestResult): void {
-  console.log(chalk.cyan('\nTrace Results:'));
-
-  if (result.mtr?.length) {
-    displayMTRResults(result.mtr);
-  }
-
-  if (result.avgLatency) {
-    console.log(`\nAverage Latency: ${result.avgLatency.toFixed(2)}ms`);
-  }
-
-  if (result.packetLoss !== undefined) {
-    console.log(`Packet Loss: ${result.packetLoss}%`);
-  }
 }

@@ -1,10 +1,6 @@
 import { promises as dns } from 'dns';
 import pRetry from 'p-retry';
-
-export interface DnsResolverOptions {
-  retries?: number;
-  nameservers?: string[];
-}
+import { CONFIG } from '../config';
 
 export interface DnsResolver {
   resolve(hostname: string): Promise<string[]>;
@@ -12,58 +8,39 @@ export interface DnsResolver {
 }
 
 /**
- * Creates a DNS resolver with retry capabilities
- * @param options Configuration options for the DNS resolver
- * @returns A DNS resolver instance
+ * Creates a DNS resolver respecting user-configured nameservers and retries.
  */
-export const createDnsResolver = (
-  options: DnsResolverOptions = {},
-): DnsResolver => {
+export function createDnsResolver(): DnsResolver {
   const resolver = new dns.Resolver();
-
-  if (options.nameservers?.length) {
-    resolver.setServers(options.nameservers);
-  }
+  resolver.setServers(CONFIG.DNS_SERVERS);
 
   return {
     async resolve(hostname: string): Promise<string[]> {
       try {
         return await pRetry(() => resolver.resolve4(hostname), {
-          retries: options.retries ?? 3,
-          onFailedAttempt: (error) => {
-            console.error(
-              `Failed to resolve ${hostname}. ${error.retriesLeft} retries left.`,
-            );
-          },
+          retries: CONFIG.DEFAULT_RETRIES,
+          minTimeout: 500,
+          maxTimeout: 3000,
         });
       } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(
-            `DNS resolution failed for ${hostname}: ${error.message}`,
-          );
-        }
-        throw error;
+        throw new Error(
+          `DNS resolution failed for ${hostname}: ${error instanceof Error ? error.message : ''}`,
+        );
       }
     },
 
     async reverse(ip: string): Promise<string[]> {
       try {
         return await pRetry(() => resolver.reverse(ip), {
-          retries: options.retries ?? 3,
-          onFailedAttempt: (error) => {
-            console.error(
-              `Failed to reverse lookup ${ip}. ${error.retriesLeft} retries left.`,
-            );
-          },
+          retries: CONFIG.DEFAULT_RETRIES,
+          minTimeout: 500,
+          maxTimeout: 3000,
         });
       } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(
-            `Reverse DNS lookup failed for ${ip}: ${error.message}`,
-          );
-        }
-        throw error;
+        throw new Error(
+          `Reverse DNS lookup failed for ${ip}: ${error instanceof Error ? error.message : ''}`,
+        );
       }
     },
   };
-};
+}

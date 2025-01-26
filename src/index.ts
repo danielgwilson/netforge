@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { enumerateCommand } from './commands/enumerate.js';
+import { enumerateSubdomainsCommand } from './commands/enumerate-subdomains.js';
 import { logger } from './utils/logger.js';
 
 const program = new Command();
@@ -13,7 +13,7 @@ program
   )
   .version('1.0.0');
 
-program.addCommand(enumerateCommand);
+program.addCommand(enumerateSubdomainsCommand);
 
 program
   .command('trace')
