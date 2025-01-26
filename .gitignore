@@ -66,4 +66,5 @@ pids/
 Thumbs.db
 
 # Repomix
+repomix.config.json
 repomix-output.*

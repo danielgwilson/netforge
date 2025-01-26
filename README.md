@@ -1,33 +1,28 @@
-# NetForge: Advanced Network Reconnaissance & Troubleshooting Toolkit
+# 🛠️ NetForge
 
-NetForge is a modern, TypeScript-based CLI tool for network reconnaissance and troubleshooting. Built with scalability and extensibility in mind, it provides robust subdomain enumeration and network path analysis capabilities.
+A lightning-fast network reconnaissance toolkit built with modern TypeScript. NetForge specializes in advanced subdomain enumeration with real-time verification and beautiful CLI output.
 
-## 🚀 Features
+## ✨ Features
 
-- **Multi-source Subdomain Discovery**
+- **Advanced Subdomain Discovery**
   - Certificate Transparency logs (crt.sh)
-  - Rapid7's Project Sonar
-  - Configurable concurrent operations
-  - Automatic DNS resolution and verification
-
-- **Network Analysis**
-  - Path tracing with MTR-style output
-  - Concurrent host verification
-  - Detailed network metrics
+  - Rapid7's Project Sonar dataset
+  - Real-time DNS resolution & HTTP(S) verification
+  - Concurrent operations with configurable threads
+  - Beautiful progress indicators & live updates
 
 - **Modern Architecture**
-  - Full TypeScript support
-  - Modular design
-  - Comprehensive error handling
-  - Extensive test coverage
-  - Configuration management
-  - Dependency injection for testing
+  - Built with TypeScript and modern ESM
+  - Robust error handling with neverthrow
+  - Modular design with dependency injection
+  - Comprehensive test coverage with Vitest
+  - Type-safe configuration with Zod
 
 ## 📦 Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/netforge.git
+git clone https://github.com/danielgwilson/netforge.git
 cd netforge
 
 # Install dependencies
@@ -36,83 +31,71 @@ npm install
 # Build the project
 npm run build
 
-# Optional: Install globally
-npm install -g .
+# Link for development
+npm link
 ```
 
-## 🛠️ Usage
+## 🚀 Usage
 
 ### Subdomain Enumeration
 
 ```bash
 # Basic enumeration
-netforge enumerate --domain example.com
+netforge enumerate -d example.com
 
-# With custom threads
-netforge enumerate --domain example.com --threads 20
+# Customize thread count
+netforge enumerate -d example.com -t 20
+
+# Save results to file
+netforge enumerate -d example.com -o results.txt
 
 # Output as JSON
-netforge enumerate --domain example.com --json
+netforge enumerate -d example.com --json
 ```
 
-### Network Path Analysis
+### Command Options
 
-```bash
-# Trace route to host
-netforge trace --target google.com
-
-# Custom packet count
-netforge trace --target google.com --count 100
+```
+Options:
+  -d, --domain <domain>    Target domain to enumerate
+  -t, --threads <number>   Number of concurrent threads (default: 10)
+  -r, --retries <number>   Number of retries for failed requests (default: 3)
+  -o, --output <file>      Output file for results
+  --json                   Output results as JSON
+  -h, --help              Display help
 ```
 
-## ⚙️ Configuration
-
-NetForge can be configured via environment variables or a `.env` file:
-
-```env
-# Network settings
-DEFAULT_TIMEOUT=5000
-DEFAULT_RETRIES=3
-DEFAULT_THREADS=10
-
-# DNS settings
-DNS_SERVERS=8.8.8.8,8.8.4.4
-
-# Feature flags
-ENABLE_BRUTE_FORCE=false
-
-# Logging
-LOG_LEVEL=info
-```
-
-## 🧪 Development
+## ⚙️ Development
 
 ### Project Structure
 
 ```
 src/
-├── commands/      # CLI command implementations
-├── scanners/      # Core scanning implementations
-├── services/      # Business logic services
-├── utils/         # Shared utilities
-└── types/         # TypeScript type definitions
+├── commands/           # CLI command implementations
+│   └── enumerate.ts   # Subdomain enumeration command
+├── scanners/          # Core scanning logic
+│   ├── subdomain-scanner.ts
+│   └── network-tester.ts
+├── utils/             # Shared utilities
+│   ├── logger.ts      # Logging utilities
+│   ├── http-client.ts # HTTP client wrapper
+│   └── dns-resolver.ts # DNS resolution utilities
+└── types/             # TypeScript type definitions
 ```
 
 ### Available Scripts
 
-- `npm run build` - Build the project
-- `npm run dev` - Run in development mode with watch
-- `npm run lint` - Lint the codebase
-- `npm run format` - Format the codebase
-- `npm test` - Run tests
-- `npm run typecheck` - Type check without emitting files
+- `npm run build` - Build with esbuild
+- `npm run dev` - Development mode with watch
+- `npm run lint` - Lint with Biome
+- `npm run format` - Format with Biome
+- `npm test` - Run tests with Vitest
+- `npm run typecheck` - Type check without emitting
 
-### Adding New Features
+### Requirements
 
-1. Create a new command in `src/commands/`
-2. Implement core logic in `src/scanners/` or `src/services/`
-3. Add tests in `__tests__` directories
-4. Update documentation
+- Node.js >= 20.0.0
+- npm >= 10.0.0
 
 ## 🧪 Testing
 
@@ -131,20 +114,24 @@ npm test -- src/scanners/__tests__/subdomain-scanner.test.ts
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- [crt.sh](https://crt.sh/) for Certificate Transparency data
-- [Rapid7](https://www.rapid7.com/) for Project Sonar data
-- The open source community for amazing tools and libraries
+- [crt.sh](https://crt.sh/) - Certificate Transparency logs
+- [Rapid7](https://www.rapid7.com/) - Project Sonar data
+- [ora](https://github.com/sindresorhus/ora) - Elegant terminal spinners
+- [chalk](https://github.com/chalk/chalk) - Terminal string styling
+- [commander](https://github.com/tj/commander.js) - CLI framework
 
 ---
 
-Built with ❤️ using TypeScript and modern JavaScript tools.
+<div align="center">
+  <sub>Built with ❤️ using TypeScript and modern JavaScript tools.</sub>
+</div>
